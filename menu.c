@@ -89,7 +89,7 @@ void menu_getopts(struct menu *menu, int argc, char *argv[]) {
 		"\t[-N color] [-n color] [-M color] [-m color] [-S color] [-s color]\n";
 
 	int opt;
-	while ((opt = getopt(argc, argv, "bhiPvf:l:o:p:N:n:M:m:S:s:")) != -1) {
+	while ((opt = getopt(argc, argv, "bhiPcvf:l:o:p:N:n:M:m:S:s:")) != -1) {
 		switch (opt) {
 		case 'b':
 			menu->bottom = true;
@@ -99,6 +99,9 @@ void menu_getopts(struct menu *menu, int argc, char *argv[]) {
 			break;
 		case 'P':
 			menu->passwd = true;
+			break;
+		case 'c':
+			menu->centered = true;
 			break;
 		case 'v':
 			puts("wmenu " VERSION);
@@ -452,7 +455,7 @@ void menu_keypress(struct menu *menu, enum wl_keyboard_key_state key_state,
 	struct xkb_state *state = context_get_xkb_state(menu->context);
 	bool ctrl = xkb_state_mod_name_is_active(state, XKB_MOD_NAME_CTRL,
 			XKB_STATE_MODS_DEPRESSED | XKB_STATE_MODS_LATCHED);
-	bool meta = xkb_state_mod_name_is_active(state, XKB_MOD_NAME_ALT,
+	bool alt = xkb_state_mod_name_is_active(state, XKB_MOD_NAME_ALT,
 			XKB_STATE_MODS_DEPRESSED | XKB_STATE_MODS_LATCHED);
 	bool shift = xkb_state_mod_name_is_active(state, XKB_MOD_NAME_SHIFT,
 			XKB_STATE_MODS_DEPRESSED | XKB_STATE_MODS_LATCHED);
@@ -554,7 +557,7 @@ void menu_keypress(struct menu *menu, enum wl_keyboard_key_state key_state,
 		default:
 			return;
 		}
-	} else if (meta) {
+	} else if (alt) {
 		// Emacs-style line editing bindings
 		switch (sym) {
 		case XKB_KEY_b:
@@ -582,6 +585,26 @@ void menu_keypress(struct menu *menu, enum wl_keyboard_key_state key_state,
 			break;
 		case XKB_KEY_l:
 			sym = XKB_KEY_Down;
+			break;
+		
+		// custom alt bindings patch
+		case XKB_KEY_w:
+			sym = XKB_KEY_Up;
+			break;
+		case XKB_KEY_s:
+			sym = XKB_KEY_Down;
+			break;
+		case XKB_KEY_a:
+			sym = XKB_KEY_Left;
+			break;
+		case XKB_KEY_d:
+			sym = XKB_KEY_Right;
+			break;
+		case XKB_KEY_x:
+			sym = XKB_KEY_BackSpace;
+			break;
+		case XKB_KEY_e:
+			sym = XKB_KEY_Return;
 			break;
 		default:
 			return;
